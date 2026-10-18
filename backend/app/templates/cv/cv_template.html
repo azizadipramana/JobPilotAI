@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ candidate.full_name }} — CV</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11pt;
+    color: #1a1a2e;
+    background: #fff;
+    line-height: 1.5;
+  }
+  .page { max-width: 780px; margin: 0 auto; padding: 36px 44px; }
+
+  /* Header */
+  .header { border-bottom: 3px solid #4361ee; padding-bottom: 16px; margin-bottom: 20px; }
+  .name { font-size: 26pt; font-weight: 700; color: #4361ee; letter-spacing: -0.5px; }
+  .tagline { font-size: 12pt; color: #6c757d; margin-top: 2px; }
+  .contacts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; font-size: 9.5pt; color: #555; }
+  .contacts a { color: #4361ee; text-decoration: none; }
+
+  /* Section */
+  .section { margin-bottom: 20px; }
+  .section-title {
+    font-size: 12pt; font-weight: 700; color: #4361ee;
+    text-transform: uppercase; letter-spacing: 1px;
+    border-bottom: 1px solid #dee2e6; padding-bottom: 4px; margin-bottom: 10px;
+  }
+
+  /* Summary */
+  .summary { font-size: 10.5pt; color: #333; }
+
+  /* Skills */
+  .skills-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .skill-tag {
+    background: #e8ecff; color: #4361ee;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 9.5pt; font-weight: 500;
+  }
+
+  /* Experience / Education */
+  .entry { margin-bottom: 14px; }
+  .entry-header { display: flex; justify-content: space-between; align-items: baseline; }
+  .entry-title { font-weight: 600; font-size: 11pt; }
+  .entry-company { color: #4361ee; font-weight: 500; }
+  .entry-period { font-size: 9.5pt; color: #888; white-space: nowrap; }
+  .entry-location { font-size: 9.5pt; color: #888; }
+  .entry-bullets { margin-top: 4px; padding-left: 18px; }
+  .entry-bullets li { font-size: 10pt; color: #444; margin-bottom: 2px; }
+
+  /* Projects */
+  .project-title { font-weight: 600; font-size: 11pt; }
+  .project-tech { font-size: 9pt; color: #888; font-style: italic; }
+  .project-desc { font-size: 10pt; color: #444; margin-top: 3px; }
+
+  /* Certifications */
+  .cert-item { font-size: 10pt; color: #333; margin-bottom: 4px; }
+  .cert-name { font-weight: 500; }
+  .cert-issuer { color: #888; }
+
+  /* Applied for */
+  .applied-for {
+    background: #f8f9ff; border-left: 4px solid #4361ee;
+    padding: 6px 12px; margin-bottom: 20px; font-size: 9.5pt; color: #555;
+  }
+
+  @media print {
+    body { font-size: 10pt; }
+    .page { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="name">{{ candidate.full_name }}</div>
+    {% if tailored.professional_summary %}
+    <div class="tagline">{{ tailored.professional_summary | truncate(120, True) }}</div>
+    {% endif %}
+    <div class="contacts">
+      {% if candidate.email %}<span>✉ <a href="mailto:{{ candidate.email }}">{{ candidate.email }}</a></span>{% endif %}
+      {% if candidate.phone %}<span>📞 {{ candidate.phone }}</span>{% endif %}
+      {% if candidate.location %}<span>📍 {{ candidate.location }}</span>{% endif %}
+      {% if candidate.linkedin_url %}<span>🔗 <a href="{{ candidate.linkedin_url }}">LinkedIn</a></span>{% endif %}
+      {% if candidate.github_url %}<span>💻 <a href="{{ candidate.github_url }}">GitHub</a></span>{% endif %}
+      {% if candidate.portfolio_url %}<span>🌐 <a href="{{ candidate.portfolio_url }}">Portfolio</a></span>{% endif %}
+    </div>
+  </div>
+
+  {% if job_title %}
+  <div class="applied-for">
+    ✦ Tailored for: <strong>{{ job_title }}</strong>{% if job_company %} at <strong>{{ job_company }}</strong>{% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Professional Summary -->
+  {% if tailored.professional_summary %}
+  <div class="section">
+    <div class="section-title">Professional Summary</div>
+    <div class="summary">{{ tailored.professional_summary }}</div>
+  </div>
+  {% endif %}
+
+  <!-- Skills -->
+  {% if tailored.skills_ordered %}
+  <div class="section">
+    <div class="section-title">Skills</div>
+    <div class="skills-list">
+      {% for skill in tailored.skills_ordered %}
+      <span class="skill-tag">{{ skill }}</span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Experience -->
+  {% if tailored.experience %}
+  <div class="section">
+    <div class="section-title">Work Experience</div>
+    {% for exp in tailored.experience %}
+    <div class="entry">
+      <div class="entry-header">
+        <div>
+          <span class="entry-title">{{ exp.title or 'Role' }}</span>
+          {% if exp.company %} · <span class="entry-company">{{ exp.company }}</span>{% endif %}
+          {% if exp.location %} <span class="entry-location">({{ exp.location }})</span>{% endif %}
+        </div>
+        <div class="entry-period">
+          {% if exp.start_date %}{{ exp.start_date }}{% endif %}
+          {% if exp.end_date %} – {{ exp.end_date }}{% elif exp.start_date %} – Present{% endif %}
+        </div>
+      </div>
+      {% if exp.bullets %}
+      <ul class="entry-bullets">
+        {% for bullet in exp.bullets %}
+        <li>{{ bullet }}</li>
+        {% endfor %}
+      </ul>
+      {% elif exp.description %}
+      <div style="font-size:10pt;color:#444;margin-top:4px;">{{ exp.description }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Education -->
+  {% if tailored.education %}
+  <div class="section">
+    <div class="section-title">Education</div>
+    {% for edu in tailored.education %}
+    <div class="entry">
+      <div class="entry-header">
+        <div>
+          <span class="entry-title">{{ edu.degree or edu.qualification or 'Degree' }}</span>
+          {% if edu.institution %} · <span class="entry-company">{{ edu.institution }}</span>{% endif %}
+        </div>
+        <div class="entry-period">
+          {% if edu.start_year %}{{ edu.start_year }}{% endif %}
+          {% if edu.end_year %} – {{ edu.end_year }}{% endif %}
+          {% if edu.graduation_year %} · Graduated {{ edu.graduation_year }}{% endif %}
+        </div>
+      </div>
+      {% if edu.gpa %}<div style="font-size:9.5pt;color:#888;">GPA: {{ edu.gpa }}</div>{% endif %}
+      {% if edu.major %}<div style="font-size:10pt;color:#555;">Major: {{ edu.major }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Projects -->
+  {% if tailored.projects %}
+  <div class="section">
+    <div class="section-title">Projects</div>
+    {% for proj in tailored.projects %}
+    <div class="entry">
+      <div class="project-title">{{ proj.name or proj.title or 'Project' }}</div>
+      {% if proj.technologies %}<div class="project-tech">{{ proj.technologies | join(', ') if proj.technologies is iterable and proj.technologies is not string else proj.technologies }}</div>{% endif %}
+      {% if proj.description %}<div class="project-desc">{{ proj.description }}</div>{% endif %}
+      {% if proj.url %}<div style="font-size:9pt;color:#4361ee;"><a href="{{ proj.url }}">{{ proj.url }}</a></div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Certifications -->
+  {% if tailored.certifications %}
+  <div class="section">
+    <div class="section-title">Certifications</div>
+    {% for cert in tailored.certifications %}
+    <div class="cert-item">
+      <span class="cert-name">{{ cert.name or cert }}</span>
+      {% if cert.issuer %} · <span class="cert-issuer">{{ cert.issuer }}</span>{% endif %}
+      {% if cert.year %} ({{ cert.year }}){% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+</body>
+</html>

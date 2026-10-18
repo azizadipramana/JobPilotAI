@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+.venv/
+venv/
+ENV/
+env/
+.env
+!.env.example
+
+# uv
+.uv/
+
+# Alembic
+alembic/versions/*.pyc
+
+# PDFs and generated files
+backend/generated_cvs/
+backend/generated_pdfs/
+*.pdf
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+.npm
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database & SQLite
+*.db
+*.sqlite
+*.sqlite3
+*.sql.bak
+
+# Secrets
+*.pem
+*.key
+credentials.json
+token.json
+client_secret*.json
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# OS
+desktop.ini
